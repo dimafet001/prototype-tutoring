@@ -8,8 +8,8 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024 #10MB max upload
-app.config['DATABASE'] = "questions.db"
- 
+app.config['DATABASE'] = "db.sqlite"
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #TODO: remove later. This doesn't let browser cache files
 
 import db
 db.init_app(app)
@@ -28,23 +28,46 @@ def face():
 def teacher():
  return render_template('teacher.html')
 
-@app.route('/login-teacher', methods=['POST']) #TODO: join login for student and teacher. Just make different if statements
+
+import re
+email_pattern = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+
+@app.route('/login-teacher', methods=['POST']) #TODO: join login for student and teacher. Just make different if statements. Add column to db.users
 def login_teacher():
-	if request.method == 'POST':
-		print(request.form)
-		session['name'] = request.form.get('user_name')
-		session['email'] = request.form.get('user_email')
-		return redirect(url_for('feed'))
+  if request.method == 'POST':
+    print(request.form)
+    email = request.form.get('user_name')
+    match = email_pattern.match(email);
+    if not match:
+      pass
+    session['name'] = request.form.get('user_name')
+    session['email'] = request.form.get('user_email')
+    return redirect(url_for('feed'))
  
 
 @app.route('/login-student', methods=['POST'])
 def login_student():
-	if request.method == 'POST':
-		print(request.form)
-		session['name'] = request.form.get('user_name')
-		session['email'] = request.form.get('user_email')
-		session['school'] = request.form.get('user_school')
-		return redirect(url_for('question'))
+  if request.method == 'POST':
+    data = request.get_json(silent=True);
+
+    # we get email, pswd, name, school
+    cur = db.get_db().cursor();
+    cur.execute("SELECT * FROM users WHERE email = \"" + data['email'] + "\"") # possible injection here ( " ; ...")
+    res = cur.fetchall();
+    if res:
+      print("This email seems to exist already")
+    else:
+      print("New user creation")
+      cur.execute("""INSERT INTO users (name, surname, email, password, school)
+        VALUES (\"{}\",\"{}\",\"{}\",\"{}\",\"{}\")""".format(data['name'], "Weird Last Name", data['email'], data['password'], data['school']))
+      db.get_db().commit()
+      # TODO: fix last name inquiry
+
+    session['name'] = data['name']
+    session['email'] = data['email']
+    session['school'] = data['school']
+
+    return redirect(url_for('question'))
 
 @app.route('/ask', methods=['POST'])
 def ask():
@@ -60,14 +83,14 @@ def ask():
       return "Upload successful"
     return "How did you get here?"
 
-	 #a = (request.form.get('q_topic'), request.form.get('q_desc'), request.form.get('q_image'))
+   #a = (request.form.get('q_topic'), request.form.get('q_desc'), request.form.get('q_image'))
 
 @app.route('/student') #this page is for creating a student profile before asking a question
 def student():
  return render_template('student.html')
 
 @app.route('/question') #this page is for asking a question (+ the ML part)
-def question():	#TODO: make the forms and actually think about what to ask. Add redirect to the materials
+def question():  #TODO: make the forms and actually think about what to ask. Add redirect to the materials
  return render_template('question.html', name=session['name'])
 
 @app.route('/feed') #this page is for answering quesitions. TODO: add database part and click redirect to videocall
