@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		body {
+			margin: 0;
+		}
+		.centered {
+			margin: 0 auto;
+		}
+		.standard {
+			width: 1000px;
+		}
+		.card {
+			width: 1000px;
+			height: 200px;
+			padding: 20px;
+			margin: 20px;
+			background: #ddd;
+			border-radius: 10px;
+		}
+	</style>
+</head>
+<body>
+
+Feed<br>
+{% if name %} Hello, {{ name }} {% endif %}<br>
+with email: {{ email }}<br>
+Here's what you got
+<div class="centered standard">
+	{% for item in questions %}
+	<div class="card">
+		{{ item.id }}
+	</div>
+	{% endfor %}
+</div>
+
+</body>
+</html>

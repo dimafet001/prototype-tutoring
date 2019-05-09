@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+<style>
+  body {
+    margin: 0;
+  }
+  form > div {
+    margin: 10px;
+  }
+  form {
+    width: 300px;
+    height: 100px;
+  }
+  .centered {
+    position: absolute;
+    left: calc(50% - 150px);
+    top: calc(50% - 50px);
+  }
+  #login-btn {
+    width: 100%;
+  }
+</style>
+</head>
+
+<body>
+WHAT are you asking , {{ name }}?
+<div class="centered">
+<form action="/ask" method="post" enctype=multipart/form-data >
+  <div style="display: inline">
+    <label for="q_image">Image:</label>
+    <input type="file" multiple id="q_image" name="q_image"></input>
+  </div>
+  <div>
+    <label for="q_topic">Topic:</label>
+    <input id="q_topic" name="q_topic">
+  </div>
+  <div>
+    <label for="q_desc">Description:</label>
+    <input id="q_desc" name="q_desc"></input>
+  </div>
+  <div>
+    <input type="submit" name="login" value="Log in" id="login-btn"/>
+  </div>
+</form>
+<div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<html>
+<head>
+	<style>
+		body {
+			margin: 0;
+		}
+		.container {
+			display: flex;
+			background: #f8f8f8;
+			width: 100%;
+			height: 100%;
+			flex-flow: row nowrap; //default
+			justify-content: center;
+			align-items: stretch;
+		}
+		.child {
+			position: relative;
+			flex: 1 100%;
+		}
+		.child:nth-child(1) {
+			background: #eee;
+		}
+		#student-btn {
+			position: absolute;
+			width: 300px;
+			height: 80px;
+			right: 100px;
+			top: calc(50% - 50px);
+			border: 0;
+		}
+
+		#teacher-btn {
+			position: absolute;
+			width: 300px;
+			height: 80px;
+			left: 100px;
+			top: calc(50% - 50px);
+			border: 0;
+		}
+
+	</style>
+</head>
+<body>
+<div class="container">
+	<div class="child">
+		<a href="student">
+		<input type="submit" name="student" value="Student" id="student-btn"/>
+		</a>
+	</div>
+	<div class="child">
+		<a href="teacher">
+		<input type="submit" name="teacher" value="Teacher" id="teacher-btn"/>
+		</a>
+	</div>
+</div>
+</body>
+</html>
